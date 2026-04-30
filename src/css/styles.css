@@ -130,6 +130,9 @@ footer {
 	body {
 		filter: brightness(0.9) invert(1) hue-rotate(180deg);
 	}
+	.modal-backdrop {
+		background-color: #fff;
+	}
 }
 
 * {
