@@ -107,7 +107,18 @@ footer {
 	margin-top: 1em;
 }
 
-#assembly-input,
+#assembly-input {
+	font-family: monospace;
+}
+
+#assembly-input .cm-editor {
+	height: 100%;
+}
+
+#assembly-input .cm-scroller {
+	overflow: auto;
+}
+
 #raw-input {
 	font-family: monospace;
 }

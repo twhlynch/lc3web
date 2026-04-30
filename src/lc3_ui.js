@@ -2,6 +2,8 @@ import $ from 'jquery';
 window.$ = $;
 window.jQuery = $;
 
+import { initAssemblyEditor, getAssemblyCode, setAssemblyCode } from './editor.js';
+
 import LC3 from './lc3_core.js';
 import { LC3Util } from './lc3_util.js';
 import assemble from './lc3_as.js';
@@ -1288,7 +1290,6 @@ $(document).ready(function() {
         var $modal = $('#assemble-modal');
 
         var $inputContainer = $('#assembly-input-container');
-        var $textarea = $('#assembly-input');
         var $releaseMessage = $('#release-message');
         var $btnAssemble = $('#btn-assemble');
         var $btnLoad = $('#btn-assembly-load');
@@ -1303,7 +1304,7 @@ $(document).ready(function() {
 
         var assemblyResult = null;
         $btnAssemble.click(function() {
-            var code = $textarea.val();
+            var code = getAssemblyCode();
             assemblyResult = assemble(code);
             $errorList.empty();
             if (assemblyResult.error) {
@@ -1389,7 +1390,7 @@ $(document).ready(function() {
                 var reader = new FileReader();
                 reader.onload = function(e) {
                     var dataString = e.target.result;
-                    $textarea.val(dataString);
+                    setAssemblyCode(dataString);
                 };
                 reader.readAsText(file);
             }
@@ -1397,6 +1398,7 @@ $(document).ready(function() {
 
         $('#mem-assemble').click(function() {
             sendEvent('assemble', 'open_assemble_modal');
+            initAssemblyEditor();
             $modal.modal();
         });
         $modal.bind('show.bs.modal', function() {
@@ -1404,6 +1406,7 @@ $(document).ready(function() {
             $successAlert.hide();
             $releaseMessage.hide();
             assemblyResult = null;
+            setTimeout(function() { initAssemblyEditor(); }, 0);
         });
     })();
 
