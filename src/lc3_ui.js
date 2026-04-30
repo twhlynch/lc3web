@@ -1,6 +1,16 @@
+import $ from 'jquery';
+window.$ = $;
+window.jQuery = $;
+
+import LC3 from './lc3_core.js';
+import { LC3Util } from './lc3_util.js';
+import assemble from './lc3_as.js';
+import hexbin from './lc3_hexbin.js';
+
 $(document).ready(function() {
     var lc3 = new LC3();
     window.lc3 = lc3; // for ease of debugging
+    window.LC3Util = LC3Util; // expose for inline usage in legacy code
 
     /**
      * Trigger a download of the provided byte array.

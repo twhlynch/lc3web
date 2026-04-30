@@ -1,4 +1,4 @@
-window.LC3Util = {
+export const LC3Util = {
 
     /*
      * Parses a decimal or hexadecimal value, or returns NaN.

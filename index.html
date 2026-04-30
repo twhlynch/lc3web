@@ -11,18 +11,6 @@
 
 <title>LC-3 Simulator</title>
 
-<link href="css/bootstrap.min.css" rel="stylesheet">
-<link href="css/styles.css" rel="stylesheet">
-
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-ga('create', 'UA-53956520-3', 'auto');
-ga('send', 'pageview');
-</script>
-
 </head>
 
 <body>
@@ -202,7 +190,7 @@ ga('send', 'pageview');
               <td>
                 <div class="has-feedback">
                   <input type="text" class="label-name form-control" placeholder="Type to create a new label" autofocus>
-                  <span class="glyphicon glyphicon-remove form-control-feedback error-feedback name-error"></span>
+                  <span class="glyphicon glyphicon-remove form-control-feedback name-error"></span>
                 </div>
                 <ul class="error-list">
                   <li class="name-empty">Name cannot be empty</li>
@@ -377,19 +365,7 @@ ga('send', 'pageview');
 
 <footer></footer>
 
-<!-- Bootstrap core JavaScript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
-<script src="js/jquery-1.11.1.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/Queue.js"></script>
-<script src="js/lc3_util.js"></script>
-<script src="js/lc3_os.js"></script>
-<script src="js/lc3_core.js"></script>
-<script src="js/lc3_as.js"></script>
-<script src="js/lc3_hexbin.js"></script>
-<script src="js/lc3_ui.js"></script>
+<script type="module" src="/src/main.js"></script>
 
 </body>
 

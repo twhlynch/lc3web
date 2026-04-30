@@ -1,15 +1,14 @@
-var lc3os;
-var lc3osSymbols;
-(function() {
-    lc3osSymbols = {
-        'TRAP_GETC':  0x0400,
-        'TRAP_OUT':   0x0430,
-        'TRAP_PUTS':  0x0450,
-        'TRAP_IN':    0x04A0,
-        'TRAP_PUTSP': 0x04E0,
-        'TRAP_HALT':  0xFD70,
-    };
-    lc3os = {
+export const lc3osSymbols = {
+    'TRAP_GETC':  0x0400,
+    'TRAP_OUT':   0x0430,
+    'TRAP_PUTS':  0x0450,
+    'TRAP_IN':    0x04A0,
+    'TRAP_PUTSP': 0x04E0,
+    'TRAP_HALT':  0xFD70,
+};
+
+export const lc3os = (function() {
+    var os = {
         // Trap vector table (valid entries)
         0x0020: 0x0400,
         0x0021: 0x0430,
@@ -138,21 +137,22 @@ var lc3osSymbols;
 
     // Fill in bad traps
     for (var i = 0; i < 0xFF; i++) {
-        if (!(i in lc3os)) {
-            lc3os[i] = 0xFD00;
+        if (!(i in os)) {
+            os[i] = 0xFD00;
         }
     }
 
     // Fill in input prompt
     var inputPrompt = 'Input a character> \0';
     for (var i = 0; i < inputPrompt.length; i++) {
-        lc3os[0x04A8 + i] = inputPrompt.charCodeAt(i);
+        os[0x04A8 + i] = inputPrompt.charCodeAt(i);
     }
 
     // Fill in halt message
     var haltMessage = '\n----- Halting the processor ----- \n\0';
     for (var i = 0; i < haltMessage.length; i++) {
-        lc3os[0xFD80 + i] = haltMessage.charCodeAt(i);
+        os[0xFD80 + i] = haltMessage.charCodeAt(i);
     }
 
+    return os;
 })();

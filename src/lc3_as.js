@@ -1090,3 +1090,5 @@ var assemble = (function() {
     return assemble;
 
 })();
+
+export default assemble;

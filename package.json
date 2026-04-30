@@ -1,0 +1,19 @@
+{
+	"name": "lc3web",
+	"version": "1.0.0",
+	"description": "Web-based simulator for the LC-3 teaching computer.",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"bootstrap": "^3.4.1",
+		"jquery": "^3.7.1"
+	},
+	"devDependencies": {
+		"vite": "^6.0.0",
+		"vite-plugin-html": "^3.2.2"
+	}
+}

@@ -1,3 +1,24 @@
+import { LC3Util } from './lc3_util.js';
+import { lc3os, lc3osSymbols } from './lc3_os.js';
+
+class Queue {
+    constructor() {
+        this._items = [];
+    }
+    enqueue(item) {
+        this._items.push(item);
+    }
+    dequeue() {
+        return this._items.shift();
+    }
+    isEmpty() {
+        return this._items.length === 0;
+    }
+    getLength() {
+        return this._items.length;
+    }
+}
+
 var LC3 = function() {
     // Create and initialize memory; load from OS if possible
     this.memory = new Array(0x10000);
@@ -774,3 +795,5 @@ LC3.prototype.interrupt = function(priorityLevel, newPC) {
     // Set new supervisor stack pointer
     this.setRegister(6, ssp);
 };
+
+export default LC3;

@@ -97,3 +97,5 @@ var hexbin = (function() {
         return extractData(contents, inputType);
     };
 })();
+
+export default hexbin;
