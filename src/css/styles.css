@@ -122,3 +122,8 @@ footer {
 #raw-input {
 	font-family: monospace;
 }
+
+* {
+	background-image: none !important;
+	box-shadow: none !important;
+}
