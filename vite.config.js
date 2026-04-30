@@ -6,7 +6,11 @@ export default defineConfig({
 	root: '.',
 	plugins: [
 		createHtmlPlugin({
-			minify: true,
+			minify: {
+				collapseWhitespace: true,
+				conservativeCollapse: true,
+				removeComments: true,
+			},
 		}),
 	],
 	build: {
