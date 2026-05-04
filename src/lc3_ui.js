@@ -240,6 +240,11 @@ $(document).ready(function() {
             $console.prop('scrollTop', $console.prop('scrollHeight'));
         } else if (type === 'exception') {
             $('.exception[data-exception=' + ev.exception + ']').slideDown();
+        } else if (type === 'print') {
+            var $console = $('#console-contents');
+            $console.text($console.text() + String(ev.value));
+            // Scroll to the bottom.
+            $console.prop('scrollTop', $console.prop('scrollHeight'));
         } else {
             // handle this?
         }

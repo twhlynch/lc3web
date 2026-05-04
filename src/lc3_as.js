@@ -864,7 +864,17 @@ var assemble = (function() {
             "PUTS": 0x22,
             "IN": 0x23,
             "PUTSP": 0x24,
-            "HALT": 0x25
+            "HALT": 0x25,
+            // debug extensions
+            "PUTN": 0x26,
+            "REG": 0x27,
+            // ELCI integration
+            "CHAT": 0x28,
+            "GETP": 0x29,
+            "SETP": 0x2a,
+            "GETB": 0x2b,
+            "SETB": 0x2c,
+            "GETH": 0x2d,
         };
         var systemTrapVector = systemTraps[upname];
         if (systemTrapVector !== undefined) {
@@ -1038,7 +1048,7 @@ var assemble = (function() {
         // Here are all the things that can come at the start of a line.
         // We use these to determine whether the first token in a line
         // is a label or an actual operation of some kind.
-        var trapVectors = "GETC OUT PUTS IN PUTSP HALT".split(' ');
+        var trapVectors = "GETC OUT PUTS IN PUTSP HALT REG PUTN CHAT GETP SETP GETB SETB GETH".split(' ');
         var instructions = ["ADD", "AND", "NOT", "BR", "BRP", "BRZ", "BRZP", "BRN", "BRNP", "BRNZ", "BRNZP", "JMP", "RET", "JSR", "JSRR", "LD", "LDI", "LDR", "LEA", "RTI", "ST", "STI", "STR", "TRAP"];
         var directives = [".FILL", ".BLKW", ".STRINGZ"];
         var commands = [].concat(_toConsumableArray(trapVectors), instructions, directives);

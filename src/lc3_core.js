@@ -80,6 +80,16 @@ var LC3 = function() {
         0x23: 'IN',
         0x24: 'PUTSP',
         0x25: 'HALT',
+        // debug extensions
+        0x26: "PUTN",
+        0x27: "REG",
+        // ELCI integration
+        0x28: "CHAT",
+        0x29: "GETP",
+        0x2a: "SETP",
+        0x2b: "GETB",
+        0x2c: "SETB",
+        0x2d: "GETH",
     };
 
     // A queue of keys that the user has entered, but have not been processed.
@@ -381,9 +391,43 @@ LC3.prototype.execute = function(op, address, operand) {
             return null;
         case 15: // TRAP
             this.setRegister(7, this.pc);
-            this.setRegister('pc', operand);
-            // internal: also increment the depth
-            this.subroutineLevel++;
+            if (op.trapVector == 0x26) // PUTN
+            {
+                this.notifyListeners({
+                    type: 'print',
+                    value: this.r[0],
+                });
+            }
+            else if (op.trapVector == 0x27) // REG
+            {
+                for (let i = 0; i < 8; i++) {
+                    this.notifyListeners({
+                        type: 'print',
+                        value: `R${i}: ${this.r[i]}\n`,
+                    });
+                }
+                this.notifyListeners({
+                    type: 'print',
+                    value: "----\n",
+                });
+            }
+            else if (op.trapVector == 0x28) // CHAT
+            { } // TODO:
+            else if (op.trapVector == 0x29) // GETP
+            { } // TODO:
+            else if (op.trapVector == 0x2a) // SETP
+            { } // TODO:
+            else if (op.trapVector == 0x2b) // GETB
+            { } // TODO:
+            else if (op.trapVector == 0x2c) // SETB
+            { } // TODO:
+            else if (op.trapVector == 0x2d) // GETH
+            { } // TODO:
+            else {
+                this.setRegister('pc', operand);
+                // internal: also increment the depth
+                this.subroutineLevel++;
+            }
             return null;
         case 13:
             // Illegal opcode exception
