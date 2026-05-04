@@ -412,17 +412,47 @@ LC3.prototype.execute = function(op, address, operand) {
                 });
             }
             else if (op.trapVector == 0x28) // CHAT
-            { } // TODO:
+            {
+                let str = "";
+                for (let addr = this.r[0]; ; addr++) {
+                    const char = this.readMemory(addr);
+                    if (char === 0) break;
+                    str += String.fromCharCode(char);
+                }
+
+                this.notifyListeners({
+                    type: 'print',
+                    value: `(chat) ${str}\n`,
+                });
+            }
             else if (op.trapVector == 0x29) // GETP
-            { } // TODO:
+            {
+                this.setRegister(0, 0);
+                this.setRegister(1, 0);
+                this.setRegister(2, 0);
+            }
             else if (op.trapVector == 0x2a) // SETP
-            { } // TODO:
+            {
+                this.notifyListeners({
+                    type: 'print',
+                    value: `(log) Set player to (${this.r[0]}, ${this.r[1]}, ${this.r[2]})\n`,
+                });
+            }
             else if (op.trapVector == 0x2b) // GETB
-            { } // TODO:
+            {
+                this.setRegister(3, 0);
+            }
             else if (op.trapVector == 0x2c) // SETB
-            { } // TODO:
+            {
+                this.notifyListeners({
+                    type: 'print',
+                    value: `(log) Set block at (${this.r[0]}, ${this.r[1]}, ${this.r[2]}) to #${this.r[3]}\n`,
+                });
+            }
             else if (op.trapVector == 0x2d) // GETH
-            { } // TODO:
+            {
+                this.setRegister(1, 0);
+            }
             else {
                 this.setRegister('pc', operand);
                 // internal: also increment the depth
