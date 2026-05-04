@@ -304,6 +304,78 @@ LC3.prototype.fetchOperands = function(address) {
     }
     return this.readMemory(address);
 };
+LC3.prototype.executeTrap = function(op, operand) {
+    this.setRegister(7, this.pc);
+
+    if (op.trapVector == 0x26) // PUTN
+    {
+        this.notifyListeners({
+            type: 'print',
+            value: this.r[0],
+        });
+    }
+    else if (op.trapVector == 0x27) // REG
+    {
+        for (let i = 0; i < 8; i++) {
+            this.notifyListeners({
+                type: 'print',
+                value: `R${i}: ${this.r[i]}\n`,
+            });
+        }
+        this.notifyListeners({
+            type: 'print',
+            value: "----\n",
+        });
+    }
+    else if (op.trapVector == 0x28) // CHAT
+    {
+        let str = "";
+        for (let addr = this.r[0]; ; addr++) {
+            const char = this.readMemory(addr);
+            if (char === 0) break;
+            str += String.fromCharCode(char);
+        }
+
+        this.notifyListeners({
+            type: 'print',
+            value: `(chat) ${str}\n`,
+        });
+    }
+    else if (op.trapVector == 0x29) // GETP
+    {
+        this.setRegister(0, 0);
+        this.setRegister(1, 0);
+        this.setRegister(2, 0);
+    }
+    else if (op.trapVector == 0x2a) // SETP
+    {
+        this.notifyListeners({
+            type: 'print',
+            value: `(log) Set player to (${this.r[0]}, ${this.r[1]}, ${this.r[2]})\n`,
+        });
+    }
+    else if (op.trapVector == 0x2b) // GETB
+    {
+        this.setRegister(3, 0);
+    }
+    else if (op.trapVector == 0x2c) // SETB
+    {
+        this.notifyListeners({
+            type: 'print',
+            value: `(log) Set block at (${this.r[0]}, ${this.r[1]}, ${this.r[2]}) to #${this.r[3]}\n`,
+        });
+    }
+    else if (op.trapVector == 0x2d) // GETH
+    {
+        this.setRegister(1, 0);
+    }
+    else
+    {
+        this.setRegister('pc', operand);
+        // internal: also increment the depth
+        this.subroutineLevel++;
+    }
+}
 LC3.prototype.execute = function(op, address, operand) {
     op.isIO = false;
     switch (op.opcode) {
@@ -390,74 +462,7 @@ LC3.prototype.execute = function(op, address, operand) {
             this.writeMemory(address, this.getRegister(op.sr));
             return null;
         case 15: // TRAP
-            this.setRegister(7, this.pc);
-            if (op.trapVector == 0x26) // PUTN
-            {
-                this.notifyListeners({
-                    type: 'print',
-                    value: this.r[0],
-                });
-            }
-            else if (op.trapVector == 0x27) // REG
-            {
-                for (let i = 0; i < 8; i++) {
-                    this.notifyListeners({
-                        type: 'print',
-                        value: `R${i}: ${this.r[i]}\n`,
-                    });
-                }
-                this.notifyListeners({
-                    type: 'print',
-                    value: "----\n",
-                });
-            }
-            else if (op.trapVector == 0x28) // CHAT
-            {
-                let str = "";
-                for (let addr = this.r[0]; ; addr++) {
-                    const char = this.readMemory(addr);
-                    if (char === 0) break;
-                    str += String.fromCharCode(char);
-                }
-
-                this.notifyListeners({
-                    type: 'print',
-                    value: `(chat) ${str}\n`,
-                });
-            }
-            else if (op.trapVector == 0x29) // GETP
-            {
-                this.setRegister(0, 0);
-                this.setRegister(1, 0);
-                this.setRegister(2, 0);
-            }
-            else if (op.trapVector == 0x2a) // SETP
-            {
-                this.notifyListeners({
-                    type: 'print',
-                    value: `(log) Set player to (${this.r[0]}, ${this.r[1]}, ${this.r[2]})\n`,
-                });
-            }
-            else if (op.trapVector == 0x2b) // GETB
-            {
-                this.setRegister(3, 0);
-            }
-            else if (op.trapVector == 0x2c) // SETB
-            {
-                this.notifyListeners({
-                    type: 'print',
-                    value: `(log) Set block at (${this.r[0]}, ${this.r[1]}, ${this.r[2]}) to #${this.r[3]}\n`,
-                });
-            }
-            else if (op.trapVector == 0x2d) // GETH
-            {
-                this.setRegister(1, 0);
-            }
-            else {
-                this.setRegister('pc', operand);
-                // internal: also increment the depth
-                this.subroutineLevel++;
-            }
+            this.executeTrap(op, operand);
             return null;
         case 13:
             // Illegal opcode exception
