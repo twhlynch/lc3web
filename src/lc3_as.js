@@ -349,6 +349,7 @@ var assemble = (function() {
 
     function parseLiteral(text) {
         var e = new Error('Invalid numeric literal: \'' + text + '\'');
+        if (text.startsWith('0x')) text = text.substring(1); // hotfix for 0x00 fomatted hex
         var first = text.charAt(0);
         if (first !== '#'
                 && first.toLowerCase() !== 'x'
