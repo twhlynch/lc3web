@@ -98,21 +98,17 @@ const tokeniser = {
 };
 
 const highlighter = HighlightStyle.define([
-	// branch
-	{ tag: t.controlKeyword, color: '#8772fd' },
-	// traps
-	{ tag: t.operatorKeyword, color: '#4275FF' },
-	// arithmetic
-	{ tag: t.logicOperator, color: '#4275FF' },
-	// memory
-	{ tag: t.definitionKeyword, color: '#4275FF' },
+	// instructions
+	{ tag: t.controlKeyword, color: '#639FD5' },
+	{ tag: t.operatorKeyword, color: '#639FD5' },
+	{ tag: t.logicOperator, color: '#639FD5' },
+	{ tag: t.definitionKeyword, color: '#639FD5' },
 	// pseudo-ops
-	{ tag: t.keyword, color: '#fd7287' },
+	{ tag: t.keyword, color: '#F57C79' },
 	// registers
-	{ tag: t.variableName, color: '#7287fd' },
-	// numbers
+	{ tag: t.variableName, color: '#639FD5' },
+	// literals
 	{ tag: t.number, color: '#fd8772' },
-	// strings
 	{ tag: t.string, color: '#fd8772', fontStyle: 'italic' },
 	// comments
 	{ tag: t.comment, color: '#B0B0B0', fontStyle: 'italic' },
