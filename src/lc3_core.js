@@ -357,7 +357,7 @@ LC3.prototype.executeTrap = function(op, operand) {
     {
         this.notifyListeners({
             type: 'print',
-            value: this.r[0],
+            value: `${LC3Util.toInt16(this.r[0])}\n`,
         });
     }
     else if (op.trapVector == 0x27) // REG
@@ -365,7 +365,7 @@ LC3.prototype.executeTrap = function(op, operand) {
         for (let i = 0; i < 8; i++) {
             this.notifyListeners({
                 type: 'print',
-                value: `R${i}: ${this.r[i]}\n`,
+                value: `R${i}: ${LC3Util.toInt16(this.r[i])}\n`,
             });
         }
         this.notifyListeners({
