@@ -1,43 +1,33 @@
 export const LC3Util = {
-
-    /*
-     * Parses a decimal or hexadecimal value, or returns NaN.
+    /**
+     * Parse an LC3 literal value
+     * returns the number, or NaN if invalid
+     *
+     * @param {string} text
      */
-    parseNumber: function(value) {
-        value = value.toLowerCase();
-        if (value.length == 0) {
-            return NaN;
-        }
-        var negative = false;
-        if (value[0] === '-') {
-            value = value.slice(1);
-            negative = true;
-        }
-        switch (value[0]) {
-            // Hex: input is like "x123"
-            case 'x':
-                var hexDigits = value.slice(1);
-                if (hexDigits.match(/[^0-9a-f]/)) {
-                    return NaN;
-                }
-                var num = parseInt(hexDigits, 16);
-                return negative ? -num : num;
-            // Binary: input is like "b1101"
-            case 'b':
-                var binaryDigits = value.slice(1);
-                if (binaryDigits.match(/[^01]/)) {
-                    return NaN;
-                }
-                var num = parseInt(binaryDigits, 2);
-                return negative ? -num : num;
-            // Decimal: input is like "1234"
-            default:
-                if (value.match(/[^0-9]/)) {
-                    return NaN;
-                }
-                var num = parseInt(value);
-                return negative ? -num : num;
-        }
+    parseNumber: function(text) {
+        const normalised = text.toLowerCase();
+
+        // count '-'s
+        const signs = (normalised.match(/-/g) || []).length;
+        if (signs > 1) return NaN;
+
+        const sign = (signs === 1) ? -1 : 1;
+        const rest = normalised.replace('-', '');
+
+        // hex 0x00 -0x00 0x-00 x00 -x00 x-00
+        const hexMatch = rest.match(/^0?x([0-9a-f]+)$/);
+        if (hexMatch) return parseInt(hexMatch[1], 16) * sign;
+
+        // binary b0 -b0 b-0 b-0 0b0 -0b0 0b-0
+        const binMatch = rest.match(/^0?b([01]+)$/);
+        if (binMatch) return parseInt(binMatch[1], 2) * sign;
+
+        // decimal #0 #-0 -#0 -0 0 00 #00 -#00 #-00
+        const decMatch = rest.match(/^#?(\d+)$/);
+        if (decMatch) return parseInt(decMatch[1], 10) * sign;
+
+        return NaN;
     },
 
     /*

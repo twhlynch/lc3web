@@ -1,6 +1,8 @@
-// Transpiled via Babel.
-// You can find the source at github:wchargin/lc3 in src/core/assemble.js.
-// I'll publish the new version when it's ready! :)
+// Base transpiled via Babel
+// github:wchargin/lc3 src/core/assemble.js
+
+import { LC3Util } from "./lc3_util";
+
 var assemble = (function() {
     if (!Array.prototype.includes) {
       Array.prototype.includes = function(searchElement /*, fromIndex*/ ) {
@@ -71,7 +73,6 @@ var assemble = (function() {
 
     exports.handleErrors = handleErrors;
     exports.withContext = withContext;
-    exports.parseNumber = parseNumber;
     exports.toHexString = toHexString;
     exports.toInt16 = toInt16;
     exports.toUint16 = toUint16;
@@ -161,49 +162,6 @@ var assemble = (function() {
         WORD_BITS: WORD_BITS,
         MAX_STANDARD_MEMORY: MAX_STANDARD_MEMORY
     };
-
-    /*
-     * Convert a decimal or hex string to a number.
-     * Return NaN on failure.
-     */
-
-    function parseNumber(string) {
-        string = string.toLowerCase();
-        if (string.length === 0) {
-            return NaN;
-        }
-
-        var negative = false;
-        if (string[0] === '-') {
-            string = string.slice(1);
-            negative = true;
-        }
-        switch (string[0]) {
-            // Hex: input is like "x123"
-            case 'x':
-                var hexDigits = string.slice(1);
-                if (hexDigits.match(/[^0-9a-f]/)) {
-                    return NaN;
-                }
-                var num = parseInt(hexDigits, 16);
-                return negative ? -num : num;
-            // Binary: input is like "b1101"
-            case 'b':
-                var binaryDigits = string.slice(1);
-                if (binaryDigits.match(/[^01]/)) {
-                    return NaN;
-                }
-                var num = parseInt(binaryDigits, 2);
-                return negative ? -num : num;
-            // Decimal: input is like "1234"
-            default:
-                if (string.match(/[^0-9]/)) {
-                    return NaN;
-                }
-                var num = parseInt(string);
-                return negative ? -num : num;
-        }
-    }
 
     /*
      * Convert a number to a hex string of at least four digits,
@@ -304,7 +262,6 @@ var assemble = (function() {
     }
 
     var Utils = {
-        parseNumber: parseNumber,
         toHexString: toHexString,
         toInt16: toInt16,
         toUint16: toUint16,
@@ -348,29 +305,11 @@ var assemble = (function() {
     }
 
     function parseLiteral(text) {
-        var e = new Error('Invalid numeric literal: \'' + text + '\'');
-        if (text.startsWith('0x')) text = text.substring(1); // hotfix for 0x00 fomatted hex
-        var first = text.charAt(0);
-        if (first !== '#'
-                && first.toLowerCase() !== 'x'
-                && first.toLowerCase() !== 'b') {
-            throw e;
+        const value = LC3Util.parseNumber(text);
+        if (isNaN(value)) {
+            throw new Error(`Invalid numeric literal: '${text}'`);
         }
-
-        // Standard decimal or hexadecimal literal.
-        var isDecimal = first === '#';
-        var negate = text.charAt(1) === '-';
-        var toParse = isDecimal ? text.substring(negate ? 2 : 1) : negate ? first + text.substring(2) : text;
-
-        var num = Utils.parseNumber(toParse);
-        if (isNaN(num)) {
-            throw e;
-        }
-        if (negate && num < 0) {
-            // No double negatives.
-            throw e;
-        }
-        return negate ? -num : num;
+        return value;
     }
 
     /*
