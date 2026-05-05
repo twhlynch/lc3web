@@ -629,6 +629,7 @@ var assemble = (function() {
                 checkBounds(state.address + 1);
 
                 var labelName = line[0];
+                if (labelName.endsWith(':')) labelName = labelName.slice(0, -1);
                 var existingLocation = state.symbols[labelName];
                 if (existingLocation !== undefined) {
                     throw new Error('label name ' + labelName + ' already exists; ' + ('it points to ' + Utils.toHexString(existingLocation)));
@@ -1014,8 +1015,11 @@ var assemble = (function() {
             }
 
             var hasLabel = !commands.includes(fst.toUpperCase());
-            if (hasLabel && !isValidLabelName(fst)) {
-                throw new Error(ctx + ': this line looks like a label, ' + ('but \'' + fst + '\' is not a valid label name; ') + 'you either misspelled an instruction ' + 'or entered an invalid name for a label');
+            if (hasLabel) {
+                const label = fst.endsWith(':') ? fst.slice(0, -1) : fst;
+                if (!isValidLabelName(label)) {
+                    throw new Error(ctx + ': this line looks like a label, ' + ('but \'' + fst + '\' is not a valid label name; ') + 'you either misspelled an instruction ' + 'or entered an invalid name for a label');
+                }
             }
 
             var labeledState = hasLabel ? delegate(handleLabel) : state;
