@@ -16,17 +16,10 @@ import {
 } from '@codemirror/commands';
 import {
 	bracketMatching,
-	foldGutter,
 	indentOnInput,
 	indentUnit,
 } from '@codemirror/language';
-import {
-	autocompletion,
-	closeBrackets,
-	closeBracketsKeymap,
-	completionKeymap,
-	acceptCompletion,
-} from '@codemirror/autocomplete';
+import { closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete';
 
 import { lc3 } from './lc3-language.js';
 
@@ -46,7 +39,6 @@ export function initAssemblyEditor() {
 			highlightActiveLine(),
 			highlightActiveLineGutter(),
 			history(),
-			foldGutter(),
 			indentOnInput(),
 			indentUnit.of('    '),
 			bracketMatching(),
@@ -56,22 +48,12 @@ export function initAssemblyEditor() {
 				{ key: 'Ctrl-/', run: toggleComment },
 				{ key: 'Mod-/', run: toggleComment },
 			]),
-			autocompletion({
-				activateOnTyping: true,
-			}),
 			keymap.of([
-				{
-					key: 'Tab',
-					run: (view) => {
-						if (acceptCompletion(view)) return true;
-						return indentMore(view);
-					},
-				},
+				{ key: 'Tab', run: indentMore },
 				{ key: 'Shift-Tab', run: indentLess },
 				...defaultKeymap,
 				...historyKeymap,
 				...closeBracketsKeymap,
-				...completionKeymap,
 			]),
 			EditorView.theme({
 				'&': { height: '400px' },

@@ -5,7 +5,6 @@ import {
 } from '@codemirror/language';
 import { StreamLanguage } from '@codemirror/language';
 import { tags as t } from '@lezer/highlight';
-import { completeFromList } from '@codemirror/autocomplete';
 
 const REGISTERS = /^[rR][0-7]\b/;
 
@@ -95,7 +94,6 @@ const tokeniser = {
 	languageData: {
 		commentTokens: { line: ';' },
 		closeBrackets: { brackets: ['"'] },
-		autocomplete,
 	},
 };
 
@@ -125,46 +123,8 @@ const highlighter = HighlightStyle.define([
 	{ tag: t.punctuation, color: '#333333' },
 ]);
 
-// prettier-ignore
-const tokens = [
-	// logic
-	'add', 'and', 'not',
-	// load
-	'ld', 'ldi', 'ldr', 'lea',
-	// store
-	'st', 'sti', 'str',
-	// branch
-	'br', 'brn', 'brz', 'brp', 'brnz', 'brnp', 'brzp', 'brnzp',
-	// jump
-	'jmp', 'ret', 'jsr', 'jsrr', 'rti',
-	// traps
-	'trap', 'getc', 'out', 'puts', 'in', 'putsp', 'halt',
-	// pseudo-ops
-	'.ORIG', '.END', '.FILL', '.BLKW', '.STRINGZ',
-	// minecraft
-	'chat', 'getp', 'setp', 'getb', 'setb', 'geth',
-	// debug
-	'reg', 'putn',
-	// registers
-	'r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7',
-];
-
 const language = StreamLanguage.define(tokeniser);
 
-function autocomplete(context) {
-	const word = context.matchBefore(/[\w.#]*/);
-	if (!word || (word.from === word.to && !context.explicit)) return null;
-	const snippets = tokens.map((snippet) => ({
-		label: snippet,
-		apply: snippet,
-		boost: 1,
-	}));
-	return completeFromList(snippets)(context);
-}
-
 export function lc3() {
-	return new LanguageSupport(language, [
-		syntaxHighlighting(highlighter),
-		language.data.of({ autocomplete }),
-	]);
+	return new LanguageSupport(language, [syntaxHighlighting(highlighter)]);
 }
