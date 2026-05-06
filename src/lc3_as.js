@@ -356,7 +356,7 @@ var assemble = (function() {
             }
 
             if (here === '\\') {
-                // Supported escape sequences: \0, \n, \r, \", \\.
+                // Supported escape sequences: \0, \n, \r, \", \\ \t.
                 var escapeSequence = text.charAt(++i);
 
                 // Note: if the backslash is the last character of the string,
@@ -369,6 +369,7 @@ var assemble = (function() {
                     '0': '\0',
                     'n': '\n',
                     'r': '\r',
+                    't': '\t',
                     '"': '\"',
                     '\\': '\\'
                 })[escapeSequence];
