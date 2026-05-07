@@ -58,6 +58,12 @@ button.memory-dropdown {
 
 footer {
 	min-height: 30px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-inline: 1rem;
+	opacity: 0.8;
 }
 
 /* Lists of errors for input validation */
