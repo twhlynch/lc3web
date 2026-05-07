@@ -305,6 +305,19 @@ LC3.prototype.fetchOperands = function(address) {
     return this.readMemory(address);
 };
 LC3.prototype.executeTrap = function(op, operand) {
+    /*
+        TODO: do not set R7 for traps
+
+        Patt, Yale N., and Patel, Sanjay J. Introduction to Computing Systems: From Bits & Gates to C/C++ and Beyond. McGraw-Hill Education, 3rd edition.
+        https://icourse.club/uploads/files/96a2b94d4be48285f2605d843a1e6db37da9a944.pdf
+        xvi - Preface - Major Changes in the Third Edition
+
+        The TRAP instruction no longer stores the linkage back to the calling
+        program in R7. Instead, the PC and PSR are pushed onto the system stack
+        and popped by the RTI instruction (renamed Return from Trap or Interrupt)
+        as the last instruction in a trap routine.
+    */
+
     if (false) {}
     // else if (op.trapVector == 0x20) // GETC
     // {
