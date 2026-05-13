@@ -40,7 +40,7 @@ var LC3 = function() {
 
     // Create and initialize registers
     this.r = new Array(8);
-    this.specialRegisters = ['pc', 'ir', 'psr'];
+    this.specialRegisters = ['pc', 'ir', 'psr', 'x', 'y', 'z'];
     this.resetAllRegisters();
 
     // Dictionaries for linking addresses and labels
@@ -402,16 +402,18 @@ LC3.prototype.executeTrap = function(op, operand) {
     }
     else if (op.trapVector == 0x29) // GETP
     {
-        this.setRegister(0, 0);
-        this.setRegister(1, 0);
-        this.setRegister(2, 0);
+        this.setRegister(0, this.x);
+        this.setRegister(1, this.y);
+        this.setRegister(2, this.z);
     }
     else if (op.trapVector == 0x2a) // SETP
     {
-        this.notifyListeners({
-            type: 'print',
-            value: `(log) Set player to (${this.r[0]}, ${this.r[1]}, ${this.r[2]})\n`,
-        });
+        this.x = LC3Util.toUint16(this.r[0]);
+        this.y = LC3Util.toUint16(this.r[1]);
+        this.z = LC3Util.toUint16(this.r[2]);
+        this.notifyListeners({ type: 'regset', register: 'x' });
+        this.notifyListeners({ type: 'regset', register: 'y' });
+        this.notifyListeners({ type: 'regset', register: 'z' });
     }
     else if (op.trapVector == 0x2b) // GETB
     {
@@ -793,6 +795,9 @@ LC3.prototype.resetAllRegisters = function() {
     this.pc = 0x3000;
     this.ir = 0;
     this.psr = 0x8002;
+    this.x = 0;
+    this.y = 0;
+    this.z = 0;
 }
 
 LC3.prototype.formatConditionCode = function() {
