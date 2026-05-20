@@ -8,6 +8,7 @@ import LC3 from './lc3_core.js';
 import { LC3Util } from './lc3_util.js';
 import assemble from './lc3_as.js';
 import hexbin from './lc3_hexbin.js';
+import { reset } from './world.js';
 
 $(document).ready(function() {
     var lc3 = new LC3();
@@ -974,6 +975,9 @@ $(document).ready(function() {
                 followPC();
             }
             sendEvent('controls', 'reset_registers');
+        });
+        $('#reset-world').click(function() {
+            reset();
         });
     })();
 

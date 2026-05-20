@@ -1,5 +1,6 @@
 import { LC3Util } from './lc3_util.js';
 import { lc3os, lc3osSymbols } from './lc3_os.js';
+import { getb, geth, setb } from './world.js';
 
 class Queue {
     constructor() {
@@ -417,18 +418,24 @@ LC3.prototype.executeTrap = function(op, operand) {
     }
     else if (op.trapVector == 0x2b) // GETB
     {
-        this.setRegister(3, 0);
+        const x = LC3Util.toInt16(this.r[0]);
+        const y = LC3Util.toInt16(this.r[1]);
+        const z = LC3Util.toInt16(this.r[2]);
+        this.setRegister(3, getb(x, y, z));
     }
     else if (op.trapVector == 0x2c) // SETB
     {
-        this.notifyListeners({
-            type: 'print',
-            value: `(log) Set block at (${this.r[0]}, ${this.r[1]}, ${this.r[2]}) to #${this.r[3]}\n`,
-        });
+        const x = LC3Util.toInt16(this.r[0]);
+        const y = LC3Util.toInt16(this.r[1]);
+        const z = LC3Util.toInt16(this.r[2]);
+        const blockId = LC3Util.toInt16(this.r[3]);
+        setb(x, y, z, blockId);
     }
     else if (op.trapVector == 0x2d) // GETH
     {
-        this.setRegister(1, 0);
+        const x = LC3Util.toInt16(this.r[0]);
+        const z = LC3Util.toInt16(this.r[1]);
+        this.setRegister(1, geth(x, z));
     }
     else
     {
