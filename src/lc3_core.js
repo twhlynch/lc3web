@@ -408,9 +408,9 @@ LC3.prototype.executeTrap = function(op, operand) {
     }
     else if (op.trapVector == 0x2a) // SETP
     {
-        this.x = LC3Util.toUint16(this.r[0]);
-        this.y = LC3Util.toUint16(this.r[1]);
-        this.z = LC3Util.toUint16(this.r[2]);
+        this.x = LC3Util.toInt16(this.r[0]);
+        this.y = LC3Util.toInt16(this.r[1]);
+        this.z = LC3Util.toInt16(this.r[2]);
         this.notifyListeners({ type: 'regset', register: 'x' });
         this.notifyListeners({ type: 'regset', register: 'y' });
         this.notifyListeners({ type: 'regset', register: 'z' });
