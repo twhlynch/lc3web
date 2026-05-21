@@ -11,6 +11,7 @@ import {
 	WebGLRenderer,
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
+import { block_color } from './blocks';
 
 export function visualise(blocks, container) {
 	if (blocks.size === 0) {
@@ -46,7 +47,7 @@ function createVoxels(voxels, center) {
 	const box_geometry = new BoxGeometry(1, 1, 1);
 
 	for (const voxel of voxels) {
-		const color = 0xffffff;
+		const color = block_color(voxel.id);
 
 		const mesh = new Mesh(
 			box_geometry,
