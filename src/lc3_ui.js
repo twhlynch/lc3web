@@ -1035,6 +1035,7 @@ $(document).ready(function() {
             sendEvent('controls', 'controls_unhalt');
         });
         $('#control-buttons button').tooltip();
+        $('#world-buttons button').tooltip();
         updateButtons();
     })();
 
