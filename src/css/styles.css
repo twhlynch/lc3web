@@ -137,9 +137,23 @@ footer {
 	body {
 		filter: brightness(0.9) invert(1) hue-rotate(180deg);
 	}
+	#visualise-container canvas {
+		/*
+		 * HACK: reversing the filter instead of not applying it
+		 * ideally dark mode should be implemented with css variables
+		 */
+		filter: brightness(1.1) invert(1) hue-rotate(-180deg);
+	}
 	.modal-backdrop {
 		background-color: #fff;
 	}
+}
+
+#visualise-container {
+	overflow: hidden;
+}
+#visualise-container canvas {
+	display: block;
 }
 
 * {

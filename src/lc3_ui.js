@@ -8,7 +8,7 @@ import LC3 from './lc3_core.js';
 import { LC3Util } from './lc3_util.js';
 import assemble from './lc3_as.js';
 import hexbin from './lc3_hexbin.js';
-import { reset } from './world.js';
+import { reset, display } from './world.js';
 
 $(document).ready(function() {
     var lc3 = new LC3();
@@ -978,6 +978,15 @@ $(document).ready(function() {
         });
         $('#reset-world').click(function() {
             reset();
+        });
+        $('#visualise-world').click(function() {
+            $('#visualise-modal').modal('show');
+        });
+        $('#visualise-modal').on('shown.bs.modal', function() {
+            display(document.getElementById('visualise-container'));
+        });
+        $('#visualise-modal').on('hidden.bs.modal', function() {
+            display(null);
         });
     })();
 
