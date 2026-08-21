@@ -33,6 +33,16 @@ html {
 	color: gray;
 }
 
+#bookmarks-bar {
+	padding: 5px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+#bookmarks-bar .btn {
+	padding: 0 6px; /* default: 6px 12px */
+}
+
 /* Configuration for the memory address table */
 button.memory-dropdown {
 	padding: 0px 6px; /* default: 6px 12px */

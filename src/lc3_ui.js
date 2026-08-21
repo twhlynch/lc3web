@@ -528,6 +528,81 @@ $(document).ready(function() {
         $('#mem-jumpto').focus();
     };
 
+    /*
+     * Memory bookmarks, persisted in local storage
+     */
+    var bookmarksKey = 'lc3-memory-bookmarks';
+    var bookmarks = (function() {
+        try {
+            var stored = window.localStorage.getItem(bookmarksKey);
+            if (stored === null) return [];
+
+            var parsed = JSON.parse(stored);
+            if (!Array.isArray(parsed)) return [];
+
+            return parsed.filter(function(address) {
+                return Number.isInteger(address) && address >= 0 && address <= 0xFFFF;
+            });
+        } catch {
+            return [];
+        }
+    })();
+
+    var saveBookmarks = function() {
+        try {
+            window.localStorage.setItem(bookmarksKey, JSON.stringify(bookmarks));
+        } catch {}
+    };
+
+    var isBookmarked = function(address) {
+        return bookmarks.indexOf(address) !== -1;
+    };
+
+    var toggleBookmark = function(address) {
+        var index = bookmarks.indexOf(address);
+        if (index === -1) {
+            bookmarks.push(address);
+        } else {
+            bookmarks.splice(index, 1);
+        }
+        saveBookmarks();
+        renderBookmarksBar();
+    };
+
+    /*
+     * Rebuild the bookmarks bar from the current list of bookmarks.
+     * Each bookmark gets a button to jump to it and a button to remove it.
+     */
+    const renderBookmarksBar = function() {
+        const $bar = $('#bookmarks-bar');
+        $bar.empty();
+
+        bookmarks.forEach(function(address) {
+            const label = lc3.addressToLabel[address];
+            const $jump = $('<button type="button">')
+                .addClass('btn btn-default hex-value hex-no-tooltip')
+                .text(label || LC3Util.toHexString(address))
+                .prop('title', LC3Util.toHexString(address))
+                .click(function() {
+                    displayMemory(address);
+                    $(this).blur();
+                });
+
+            const $remove = $('<button type="button">')
+                .addClass('btn btn-default bookmark-remove')
+                .attr('title', 'Remove bookmark')
+                .append($('<span>').addClass('glyphicon glyphicon-remove'))
+                .click(function() {
+                    toggleBookmark(address);
+                });
+            $('<div>').addClass('btn-group')
+                .append($jump).append($remove)
+                .appendTo($bar);
+        });
+
+        $bar.toggleClass('hidden', bookmarks.length === 0);
+    };
+
     // Set up listeners for memory scrolling controls.
     (function() {
         $('#mem-jumpto-activate').click(function() {
@@ -681,6 +756,7 @@ $(document).ready(function() {
                 lc3.setLabel(address, name);
                 linkage.previous.labelName = name;
                 linkage.previous.labelAddress = address;
+                renderBookmarksBar();
             };
             $name.on('input', update);
             $address.on('input', update);
@@ -691,6 +767,7 @@ $(document).ready(function() {
                 if (linkage.previous.exists !== null) {
                     lc3.unsetLabelGivenName(linkage.previous.labelName);
                 }
+                renderBookmarksBar();
                 $(this).closest('tr').remove();
             });
         };
@@ -809,20 +886,30 @@ $(document).ready(function() {
 
             var $pc;
             var $bp;
+            var $bm;
             $pc = createDropdownItem('Move PC here').click(function() {
                 lc3.setRegister('pc', $(this).data('dropdown').data('address'));
             });
             $bp = createDropdownItem('Set breakpoint here').click(function() {
                 toggleBreakpoint($(this).data('dropdown').data('address'));
             }).addClass('breakpoint-toggle');
-            // We want to update the breakpoint text when the dropdown activates.
-            // (It should be a toggle.)
+            $bm = createDropdownItem('Bookmark this address').click(function() {
+                toggleBookmark($(this).data('dropdown').data('address'));
+            }).addClass('bookmark-toggle');
+            // We want to update the breakpoint and bookmark text when the
+            // dropdown activates. (They should be toggles.)
             $dropdown.click(function() {
                 var local$bp = $(this).parent().find('.breakpoint-toggle'); // again, closures
                 if ($(this).data('address') in breakpoints) {
                     local$bp.text('Clear this breakpoint');
                 } else {
                     local$bp.text('Set breakpoint here');
+                }
+                var local$bm = $(this).parent().find('.bookmark-toggle');
+                if (isBookmarked($(this).data('address'))) {
+                    local$bm.text('Remove this bookmark');
+                } else {
+                    local$bm.text('Bookmark this address');
                 }
             });
 
@@ -840,6 +927,7 @@ $(document).ready(function() {
             memoryRows[i] = $row;
         }
         displayMemory(currentMemoryLocation);
+        renderBookmarksBar();
     })();
 
     // Configure the editable hex values.
@@ -1136,6 +1224,7 @@ $(document).ready(function() {
                     var label = match[1];
                     lc3.setLabel(address, label);
                 }
+                renderBookmarksBar();
             };
             reader.readAsText(file);
         };
@@ -1341,6 +1430,7 @@ $(document).ready(function() {
         });
         $btnLoad.click(function() {
             lc3.loadAssembled(assemblyResult);
+            renderBookmarksBar();
             $modal.modal('hide');
         });
         $btnDownloadObject.click(function() {
@@ -1461,6 +1551,7 @@ $(document).ready(function() {
         });
         $btnLoad.click(function() {
             lc3.loadAssembled(assemblyResult);
+            renderBookmarksBar();
             $modal.modal('hide');
         });
         $btnDownloadObject.click(function() {
