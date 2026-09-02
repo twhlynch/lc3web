@@ -562,9 +562,11 @@ LC3.prototype.storeResult = function(op, result) {
         case 2:  // LD
         case 10: // LDI
         case 6:  // LDR
-        case 14: // LEA
             this.setRegister(op.dr, result);
             this.setConditionCode(result);
+            break;
+        case 14: // LEA
+            this.setRegister(op.dr, result);
             break;
         case 8: // RTI
             // Nothing to do here.
