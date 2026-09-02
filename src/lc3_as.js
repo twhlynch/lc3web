@@ -557,7 +557,7 @@ var assemble = (function() {
      */
 
     function isValidLabelName(label) {
-        if (label.match(/[^A-Za-z0-9_]/)) {
+        if (label.length > 20 || label.match(/[^A-Za-z0-9_]/)) {
             // Invalid characters.
             return false;
         }
