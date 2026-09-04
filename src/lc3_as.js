@@ -1,7 +1,7 @@
 // Base transpiled via Babel
 // github:wchargin/lc3 src/core/assemble.js
 
-import { LC3Util } from "./lc3_util";
+import { LC3Util } from "./lc3_util.js";
 
 var assemble = (function() {
     if (!Array.prototype.includes) {

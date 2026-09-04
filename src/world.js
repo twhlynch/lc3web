@@ -1,6 +1,6 @@
 // simulate a superflat minecraft world with consistent getb, setb, geth
 
-import { visualise } from './visualise';
+import { visualise } from './visualise.js';
 
 const MAX_HEIGHT = 319;
 const MIN_HEIGHT = -64;

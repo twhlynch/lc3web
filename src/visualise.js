@@ -11,7 +11,7 @@ import {
 	WebGLRenderer,
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
-import { block_color } from './blocks';
+import { block_color } from './blocks.js';
 
 export function visualise(blocks, container) {
 	if (blocks.size === 0) {
