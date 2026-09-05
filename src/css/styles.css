@@ -4,8 +4,17 @@ html {
 	overflow-y: scroll;
 }
 
-#scroll-container {
+#mem-footer-container {
 	text-align: center;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	gap: 15px;
+}
+#mem-footer-container > div {
+	padding: 0;
+	width: fit-content;
 }
 
 .register-name {

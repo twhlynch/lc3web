@@ -808,6 +808,12 @@ LC3.prototype.resetAllRegisters = function() {
     this.y = 0;
     this.z = 0;
 }
+LC3.prototype.resetMemory = function() {
+    for (var i = 0; i < this.memory.length; i++) {
+        var osEntry = lc3os[i];
+        this.memory[i] = (osEntry === undefined) ? 0 : osEntry;
+    }
+}
 
 LC3.prototype.formatConditionCode = function() {
     var code = this.getConditionCode();

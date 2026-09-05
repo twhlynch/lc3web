@@ -627,6 +627,20 @@ $(document).ready(function() {
             displayMemory(currentMemoryLocation + 1);
             $(this).blur();
         });
+        $('#mem-reset').click(function(e) {
+            $(this).blur();
+            if (e.shiftKey) {
+                lc3.resetMemory();
+                refreshMemoryDisplay();
+            } else {
+                $('#reset-confirm-modal').modal('show');
+            }
+        });
+        $('#mem-reset-confirm').click(function() {
+            lc3.resetMemory();
+            refreshMemoryDisplay();
+            $('#reset-confirm-modal').modal('hide');
+        });
 
         var $newLabelRow = $('#new-label-row');
         $newLabelRow.find('.error-feedback').hide();
