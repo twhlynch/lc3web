@@ -1,9 +1,6 @@
 # system
 .DS_Store
 
-# direnv
-.direnv/
-
 # build output
 dist/
 .wrangler/
@@ -26,3 +23,7 @@ worker-configuration.d.ts
 # secrets
 .env*
 .dev.vars
+
+# direnv
+.direnv/
+!.envrc
