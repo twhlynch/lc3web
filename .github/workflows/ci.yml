@@ -20,6 +20,8 @@ jobs:
 
             - run: pnpm install --frozen-lockfile
 
+            - run: pnpm bot:types
+
             - name: Typecheck
               run: pnpm check
 
