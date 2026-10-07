@@ -27,6 +27,7 @@ const code = '```';
 const lang = 'x86asm';
 
 export const Code = {
+	Fence: code,
 	Prefix: `${code}${lang}\n`,
 	Suffix: `\n${code}`,
 } as const;
