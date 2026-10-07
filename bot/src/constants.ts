@@ -3,6 +3,7 @@ export const Colors = {
 } as const;
 
 export const Limits = {
+	LC3MaxSteps: 1_000_000,
 	DiscordMessageMax: 2000,
 	DiscordTextInputMax: 4000,
 } as const;
