@@ -3,6 +3,7 @@ export const Colors = {
 } as const;
 
 export const Limits = {
+	DiscordMessageMax: 2000,
 	DiscordTextInputMax: 4000,
 } as const;
 
@@ -20,4 +21,12 @@ export const Responses = {
 	// Fallback
 	SomethingWentWrong: 'Something went wrong.',
 	RateLimited:        'Rate limited. Try again in ',
+} as const;
+
+const code = '```';
+const lang = 'x86asm';
+
+export const Code = {
+	Prefix: `${code}${lang}\n`,
+	Suffix: `\n${code}`,
 } as const;

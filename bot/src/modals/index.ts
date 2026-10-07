@@ -1,6 +1,7 @@
 import type { APIInteractionResponse, APIModalSubmitInteraction } from 'discord-api-types/v10';
 import { Responses } from '../constants';
 import { ephemeral } from '../responses';
+import { source } from './source';
 
 type ModalHandler = (
 	interaction: APIModalSubmitInteraction,
@@ -8,7 +9,9 @@ type ModalHandler = (
 	ctx: ExecutionContext,
 ) => APIInteractionResponse | Promise<APIInteractionResponse>;
 
-const modals: Partial<Record<string, ModalHandler>> = {};
+const modals: Partial<Record<string, ModalHandler>> = {
+	parse_code: source,
+};
 
 export async function handleModalSubmit(interaction: APIModalSubmitInteraction, env: Env, ctx: ExecutionContext): Promise<Response> {
 	const handler = modals[interaction.data.custom_id];
