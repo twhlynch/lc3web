@@ -270,6 +270,10 @@ var assemble = (function() {
         formatConditionCode: formatConditionCode
     };
 
+    /**
+     * @param {string} text
+     * @returns {{ orig: number, symbolTable: Record<string, number>, machineCode: number[], error?: undefined } | { error: string[] }}
+     */
     function assemble(text) {
         var result = handleErrors(function () {
             var tokenizedLines = tokenize(text);
