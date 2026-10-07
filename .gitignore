@@ -1,9 +1,21 @@
 # system
 .DS_Store
 
+# direnv
+.direnv/
+
 # build output
 dist/
 .wrangler/
+
+# cache
+.eslintcache
+\*.tsbuildinfo
+
+# logs
+logs
+_.log
+.pnpm-debug.log*
 
 # dependencies
 node_modules/
@@ -12,4 +24,5 @@ node_modules/
 worker-configuration.d.ts
 
 # secrets
-.env
+.env*
+.dev.vars
