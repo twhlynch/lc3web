@@ -10,13 +10,18 @@
 	},
 	"scripts": {
 		"dev": "pnpm --filter @lc3/web dev",
-		"build": "pnpm -r --if-present build",
 		"preview": "pnpm --filter @lc3/web preview",
+		"build": "pnpm -r --if-present build",
 		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"check": "tsc --noEmit && pnpm -r --if-present check",
-		"types": "pnpm --filter @lc3/bot types"
+		"bot:types": "pnpm --filter @lc3/bot types",
+		"bot:register": "pnpm --filter @lc3/bot register",
+		"bot:dev": "pnpm --filter @lc3/bot dev",
+		"bot:deploy": "pnpm --filter @lc3/bot deploy",
+		"cli": "pnpm --filter @lc3/cli start"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
