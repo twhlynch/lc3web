@@ -9,16 +9,17 @@
 		"deploy": "wrangler deploy",
 		"types": "wrangler types",
 		"check": "tsc --noEmit",
-		"register": "export $(grep -v '^#' ../.env | xargs) && node cmd/register.js"
+		"register": "node cmd/register.js"
 	},
 	"dependencies": {
-		"node-fetch": "^2.6.1",
+		"@lc3/sim": "workspace:*",
+		"node-fetch": "^3.3.2",
 		"tweetnacl": "^1.0.3"
 	},
 	"devDependencies": {
 		"@types/node": "^26.6.4",
 		"@types/node-fetch": "^2.6.13",
-		"discord-api-types": "^0.38.38",
+		"discord-api-types": "^0.38.56",
 		"typescript": "^5.9.3",
 		"wrangler": "^4.147.0"
 	}
