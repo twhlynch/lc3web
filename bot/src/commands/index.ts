@@ -1,6 +1,7 @@
 import type { APIChatInputApplicationCommandInteraction, APIInteractionResponse } from 'discord-api-types/v10';
 import { Responses } from '../constants';
 import { ephemeral } from '../responses';
+import { run } from './run';
 
 type CommandHandler = (
 	interaction: APIChatInputApplicationCommandInteraction,
@@ -8,7 +9,9 @@ type CommandHandler = (
 	ctx: ExecutionContext,
 ) => APIInteractionResponse | Promise<APIInteractionResponse>;
 
-const slash_commands: Partial<Record<string, CommandHandler>> = {};
+const slash_commands: Partial<Record<string, CommandHandler>> = {
+	run: run,
+};
 
 export async function handleApplicationCommand(
 	interaction: APIChatInputApplicationCommandInteraction,

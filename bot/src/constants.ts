@@ -2,6 +2,10 @@ export const Colors = {
 	Blurple: 0x5865f2,
 } as const;
 
+export const Limits = {
+	DiscordTextInputMax: 4000,
+} as const;
+
 // prettier-ignore
 export const Responses = {
 	// Invalid things
