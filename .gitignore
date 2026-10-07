@@ -1,3 +1,29 @@
-node_modules/
-dist/
+# system
 .DS_Store
+
+# build output
+dist/
+.wrangler/
+
+# cache
+.eslintcache
+\*.tsbuildinfo
+
+# logs
+logs
+_.log
+.pnpm-debug.log*
+
+# dependencies
+node_modules/
+
+# generated wrangler types
+worker-configuration.d.ts
+
+# secrets
+.env*
+.dev.vars
+
+# direnv
+.direnv/
+!.envrc

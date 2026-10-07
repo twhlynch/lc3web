@@ -2,8 +2,8 @@
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { exit } from 'node:process';
-import assemble from './src/lc3_as.js';
-import LC3 from './src/lc3_core.js';
+import assemble from '@lc3/sim/lc3_as.js';
+import LC3 from '@lc3/sim/lc3_core.js';
 
 /** @param lc3 {LC3} */
 async function simulateLC3(lc3) {
@@ -142,8 +142,8 @@ async function main() {
 	}
 
 	console.error(`Usage:
-    node cli.mjs --assemble <src> <out>    Assemble <src> to <out>
-    node cli.mjs --simulate <file.obj>     Run an assembled object file`);
+    lc3 --assemble <src> <out>    Assemble <src> to <out>
+    lc3 --simulate <file.obj>     Run an assembled object file`);
 
 	return 1;
 }

@@ -42,6 +42,8 @@ var LC3 = function() {
     // Create and initialize registers
     this.r = new Array(8);
     this.specialRegisters = ['pc', 'ir', 'psr', 'x', 'y', 'z'];
+    /** @type {number} */
+    this.pc = 0x3000;
     this.resetAllRegisters();
 
     // Dictionaries for linking addresses and labels
@@ -725,6 +727,7 @@ LC3.prototype.unsetLabel_internal_ = function(address, label) {
 // Functions to get and set memory.
 // getMemory and setMemory are the referentially transparent versions of
 // readMemory and writeMemory, respectively.
+/** @param {number} address @returns {number} */
 LC3.prototype.getMemory = function(address) {
     return this.memory[address];
 }

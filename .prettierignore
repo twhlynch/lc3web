@@ -1,0 +1,15 @@
+# legacy codebase stays as-is
+**/*.js
+**/*.mjs
+**/*.cjs
+**/*.css
+web/index.html
+
+# build output and caches
+**/dist/
+.wrangler/
+node_modules/
+
+# generated
+worker-configuration.d.ts
+pnpm-lock.yaml

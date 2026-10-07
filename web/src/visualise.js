@@ -11,7 +11,21 @@ import {
 	WebGLRenderer,
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
+import { blocks } from '@lc3/sim/world.js';
 import { block_color } from './blocks.js';
+
+/** @type {()} cleanup function from visualise */
+let cleanup;
+
+export function display(container) {
+	if (cleanup) {
+		cleanup();
+		cleanup = undefined;
+	}
+	if (!container) return;
+	container.innerHTML = '';
+	cleanup = visualise(blocks, container);
+}
 
 export function visualise(blocks, container) {
 	if (blocks.size === 0) {

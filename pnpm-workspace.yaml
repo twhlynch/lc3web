@@ -1,0 +1,9 @@
+packages:
+    - bot
+    - cli
+    - sim
+    - web
+
+allowBuilds:
+    esbuild: true
+    workerd: true

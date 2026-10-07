@@ -1,0 +1,16 @@
+{
+	"name": "@lc3/cli",
+	"version": "1.0.0",
+	"description": "Command line assembler and simulator for the LC-3",
+	"type": "module",
+	"private": true,
+	"bin": {
+		"lc3": "./cli.mjs"
+	},
+	"scripts": {
+		"start": "node cli.mjs"
+	},
+	"dependencies": {
+		"@lc3/sim": "workspace:*"
+	}
+}

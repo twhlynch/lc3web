@@ -3,23 +3,34 @@
 	"version": "1.0.0",
 	"description": "Web-based simulator for the LC-3 teaching computer.",
 	"type": "module",
-	"scripts": {
-		"dev": "vite",
-		"build": "vite build",
-		"preview": "vite preview"
+	"private": true,
+	"packageManager": "pnpm@12.9.0",
+	"engines": {
+		"node": ">=v24.18.0"
 	},
-	"dependencies": {
-		"@codemirror/autocomplete": "^6.18.0",
-		"@codemirror/commands": "^6.7.0",
-		"@codemirror/language": "^6.10.0",
-		"@codemirror/state": "^6.5.0",
-		"@codemirror/view": "^6.35.0",
-		"bootstrap": "^3.4.1",
-		"jquery": "^3.7.1",
-		"three": "^0.184.0"
+	"scripts": {
+		"dev": "pnpm --filter @lc3/web dev",
+		"preview": "pnpm --filter @lc3/web preview",
+		"build": "pnpm -r --if-present build",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"check": "tsc --noEmit && pnpm -r --if-present check",
+		"bot:types": "pnpm --filter @lc3/bot types",
+		"bot:register": "pnpm --filter @lc3/bot register",
+		"bot:dev": "pnpm --filter @lc3/bot dev",
+		"bot:deploy": "pnpm --filter @lc3/bot deploy",
+		"cli": "pnpm --filter @lc3/cli start"
 	},
 	"devDependencies": {
-		"vite": "^6.0.0",
-		"vite-plugin-html": "^3.2.2"
+		"@eslint/js": "^10.0.1",
+		"@ianvs/prettier-plugin-sort-imports": "^4.7.1",
+		"@types/node": "^25.9.2",
+		"eslint": "^10.5.0",
+		"jiti": "^2.7.0",
+		"prettier": "^3.5.0",
+		"typescript": "^6.0.3",
+		"typescript-eslint": "^8.61.0"
 	}
 }

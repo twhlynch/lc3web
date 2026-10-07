@@ -1,0 +1,10 @@
+{
+	"name": "@lc3/sim",
+	"version": "1.0.0",
+	"description": "Core LC-3 simulator logic",
+	"type": "module",
+	"private": true,
+	"exports": {
+		"./*": "./src/*"
+	}
+}

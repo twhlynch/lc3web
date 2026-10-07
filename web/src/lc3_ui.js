@@ -4,11 +4,12 @@ window.jQuery = $;
 
 import { initAssemblyEditor, getAssemblyCode, setAssemblyCode } from './editor.js';
 
-import LC3 from './lc3_core.js';
-import { LC3Util } from './lc3_util.js';
-import assemble from './lc3_as.js';
-import hexbin from './lc3_hexbin.js';
-import { reset, display } from './world.js';
+import LC3 from '@lc3/sim/lc3_core.js';
+import { LC3Util } from '@lc3/sim/lc3_util.js';
+import assemble from '@lc3/sim/lc3_as.js';
+import hexbin from '@lc3/sim/lc3_hexbin.js';
+import { reset } from '@lc3/sim/world.js';
+import { display } from './visualise.js';
 
 $(document).ready(function() {
     var lc3 = new LC3();

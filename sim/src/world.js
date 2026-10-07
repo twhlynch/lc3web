@@ -1,7 +1,5 @@
 // simulate a superflat minecraft world with consistent getb, setb, geth
 
-import { visualise } from './visualise.js';
-
 const MAX_HEIGHT = 319;
 const MIN_HEIGHT = -64;
 
@@ -10,7 +8,7 @@ const GRASS = 2;
 const DIRT = 3;
 const BEDROCK = 7;
 
-const blocks = new Map();
+export const blocks = new Map();
 
 function key(x, y, z) {
 	return `${x},${y},${z}`;
@@ -51,15 +49,3 @@ export function geth(x, z) {
 	return MIN_HEIGHT;
 }
 
-/** @type {()} cleanup function from visualise */
-let cleanup;
-
-export function display(container) {
-	if (cleanup) {
-		cleanup();
-		cleanup = undefined;
-	}
-	if (!container) return;
-	container.innerHTML = '';
-	cleanup = visualise(blocks, container);
-}
