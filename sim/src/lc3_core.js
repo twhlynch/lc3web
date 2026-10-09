@@ -107,6 +107,35 @@ LC3.prototype.formatAddress = function(address) {
     return (label !== undefined) ? label : LC3Util.toHexString(address);
 };
 
+LC3.prototype.getPrivilegeMode = function() {
+    // This bit being set to 1 means the program is running in user mode
+    return (this.psr & (1 << 15)) !== 0;
+}
+
+LC3.prototype.setPrivilegeMode = function(value) {
+    if (value) {
+        this.psr |= (1 << 15);
+    }
+    else {
+        this.psr &= ~(1 << 15);
+    }
+}
+
+LC3.prototype.inPrivilegedMemory = function(value) {
+    // Checks if the computed address is in privileged memory
+    return (value >= 0x0000 && value < 0x3000)
+           || (value >= 0xfe00 && value <= 0xffff);
+}
+
+LC3.prototype.throwExceptionAndHalt = function(value) {
+    var ev = {
+        type: 'exception',
+        exception: value
+    };
+    this.notifyListeners(ev);
+    this.halt();
+}
+
 LC3.prototype.getConditionCode = function() {
     var n = (this.psr & 4) !== 0;
     var z = (this.psr & 2) !== 0;
@@ -131,6 +160,12 @@ LC3.prototype.setConditionCode = function(value) {
 LC3.prototype.nextInstruction = function() {
     // Store any keypresses since last time.
     this.updateIO();
+
+    // Make sure user programs aren't fetching from privileged memory
+    if (this.inPrivilegedMemory(this.pc) && this.getPrivilegeMode()) {
+        this.throwExceptionAndHalt('access');
+        return;
+    }
 
     // Perform the instruction cycle.
     this.fetch();
@@ -483,15 +518,26 @@ LC3.prototype.execute = function(op, address, operand) {
             if (this.ioLocations.indexOf(address) !== -1) {
                 op.isIO = true;
             }
+            if (this.inPrivilegedMemory(operand) && this.getPrivilegeMode()) {
+                this.throwExceptionAndHalt('access');
+            }
             return operand;
         case 10: // LDI
             if (this.ioLocations.indexOf(operand) !== -1) {
                 op.isIO = true;
             }
+            if ((this.inPrivilegedMemory(operand)
+                || this.inPrivilegedMemory(this.readMemory(operand)))
+                    && this.getPrivilegeMode()) {
+                this.throwExceptionAndHalt('access');
+            }
             return this.readMemory(operand);
         case 6: // LDR
             if (this.ioLocations.indexOf(address) !== -1) {
                 op.isIO = true;
+            }
+            if (this.inPrivilegedMemory(operand) && this.getPrivilegeMode()) {
+                this.throwExceptionAndHalt('access');
             }
             return operand;
         case 14: // LEA
@@ -499,14 +545,8 @@ LC3.prototype.execute = function(op, address, operand) {
         case 9: // NOT
             return LC3Util.toUint16(~this.getRegister(op.sr));
         case 8: // RTI
-            if ((this.psr & 0x8000) !== 0) {
-                // Privilege mode exception
-                var ev = {
-                    type: 'exception',
-                    exception: 'privilege'
-                };
-                this.notifyListeners(ev);
-                this.halt();
+            if (this.getPrivilegeMode()) {
+                this.throwExceptionAndHalt('privilege');
             } else {
                 var r6 = this.r[6];
                 this.setRegister('pc', this.readMemory(r6));
@@ -518,11 +558,19 @@ LC3.prototype.execute = function(op, address, operand) {
             if (this.ioLocations.indexOf(address) !== -1) {
                 op.isIO = true;
             }
+            if (this.inPrivilegedMemory(address) && this.getPrivilegeMode()) {
+                this.throwExceptionAndHalt('access');
+            }
             this.writeMemory(address, this.getRegister(op.sr));
             return null;
         case 11: // STI
             if (this.ioLocations.indexOf(operand) !== -1) {
                 op.isIO = true;
+            }
+            if ((this.inPrivilegedMemory(operand)
+                || this.inPrivilegedMemory(this.readMemory(operand)))
+                    && this.getPrivilegeMode()) {
+                this.throwExceptionAndHalt('access');
             }
             this.writeMemory(operand, this.getRegister(op.sr));
             return null;
@@ -530,19 +578,16 @@ LC3.prototype.execute = function(op, address, operand) {
             if (this.ioLocations.indexOf(address) !== -1) {
                 op.isIO = true;
             }
+            if (this.inPrivilegedMemory(address) && this.getPrivilegeMode()) {
+                this.throwExceptionAndHalt('access');
+            }
             this.writeMemory(address, this.getRegister(op.sr));
             return null;
         case 15: // TRAP
             this.executeTrap(op, operand);
             return null;
         case 13:
-            // Illegal opcode exception
-            var ev = {
-                type: 'exception',
-                exception: 'opcode'
-            };
-            this.notifyListeners(ev);
-            this.halt();
+            this.throwExceptionAndHalt('opcode');
             return null;
         default:
             return undefined;
