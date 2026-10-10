@@ -360,50 +360,49 @@ LC3.prototype.executeTrap = function(op, operand) {
     // else if (op.trapVector == 0x20) // GETC
     // {
     // }
-    else if (op.trapVector == 0x21) // OUT
-    {
-        this.notifyListeners({
-            type: 'keyout',
-            value: this.r[0],
-        });
-    }
-    else if (op.trapVector == 0x22) // PUTS
-    {
-        for (let addr = this.r[0]; ; addr++) {
-            const char = this.readMemory(addr);
-            if (char === 0) break;
-            this.notifyListeners({
-                type: 'keyout',
-                value: char,
-            });
-        }
-    }
-    // else if (op.trapVector == 0x23) // IN
+    // else if (op.trapVector == 0x21) // OUT
     // {
+    //     this.notifyListeners({
+    //         type: 'keyout',
+    //         value: this.r[0],
+    //     });
     // }
-    else if (op.trapVector == 0x24) // PUTSP
-    {
-        for (let addr = this.r[0]; ; addr++) {
-            const word = this.readMemory(addr);
-            if (word === 0) break;
-            const char1 = word & 0xFF;
-            const char2 = (word >> 8) & 0xFF;
-
-            if (char1 === 0) break;
-            this.notifyListeners({
-                type: 'keyout',
-                value: char1,
-            });
-            if (char2 === 0) break;
-            this.notifyListeners({
-                type: 'keyout',
-                value: char2,
-            });
-        }
-    }
-    // else if (op.trapVector == 0x25) // HALT
+    // else if (op.trapVector == 0x22) // PUTS
     // {
+    //     for (let addr = this.r[0]; ; addr++) {
+    //         const char = this.readMemory(addr);
+    //         if (char === 0) break;
+    //         this.notifyListeners({
+    //             type: 'keyout',
+    //             value: char,
+    //         });
+    //     }
     // }
+    // // else if (op.trapVector == 0x23) // IN
+    // // {
+    // // }
+    // else if (op.trapVector == 0x24) // PUTSP
+    // {
+    //     for (let addr = this.r[0]; ; addr++) {
+    //         const word = this.readMemory(addr);
+    //         if (word === 0) break;
+    //         const char1 = word & 0xFF;
+    //         const char2 = (word >> 8) & 0xFF;
+    //         if (char1 === 0) break;
+    //         this.notifyListeners({
+    //             type: 'keyout',
+    //             value: char1,
+    //         });
+    //         if (char2 === 0) break;
+    //         this.notifyListeners({
+    //             type: 'keyout',
+    //             value: char2,
+    //         });
+    //     }
+    // }
+    // // else if (op.trapVector == 0x25) // HALT
+    // // {
+    // // }
     else if (op.trapVector == 0x26) // PUTN
     {
         this.notifyListeners({
@@ -476,7 +475,14 @@ LC3.prototype.executeTrap = function(op, operand) {
     }
     else
     {
-        this.setRegister(7, this.pc);
+        var temp = this.psr;
+        if (this.getPrivilegeMode()) {
+            this.savedUSP = this.r[6];
+            this.setRegister(6, this.savedSSP);
+            this.setPrivilegeMode(0);
+        }
+        this.setMemory(--this.r[6], temp);
+        this.setMemory(--this.r[6], this.pc);
         this.setRegister('pc', operand);
         // internal: also increment the depth
         this.subroutineLevel++;
@@ -548,10 +554,15 @@ LC3.prototype.execute = function(op, address, operand) {
             if (this.getPrivilegeMode()) {
                 this.throwExceptionAndHalt('privilege');
             } else {
-                var r6 = this.r[6];
-                this.setRegister('pc', this.readMemory(r6));
-                this.setRegister('psr', this.readMemory(r6 + 1));
-                this.setRegister(6, r6 + 2);
+                this.setRegister('pc', this.readMemory(this.r[6]));
+                this.setRegister(6, this.r[6] + 1);
+                var temp = this.readMemory(this.r[6]);
+                this.setRegister(6, this.r[6] + 1);
+                this.setRegister('psr', temp);
+                if (this.getPrivilegeMode()) {
+                    this.savedSSP = this.r[6];
+                    this.setRegister(6, this.savedUSP);
+                }
             }
             return null;
         case 3: // ST
@@ -855,6 +866,9 @@ LC3.prototype.resetAllRegisters = function() {
     this.x = 0;
     this.y = 0;
     this.z = 0;
+    this.savedSSP = 0x3000; // supervisor stack position
+    this.savedUSP = 0xFE00; // user stack position
+    this.r[6] = this.savedUSP; // set up user stack
 }
 LC3.prototype.resetMemory = function() {
     for (var i = 0; i < this.memory.length; i++) {
@@ -979,16 +993,16 @@ LC3.prototype.interrupt = function(priorityLevel, newPC) {
         return;
     }
 
-    // Get supervisor stack pointer
-    var ssp = this.getRegister(6);
+    var temp = this.psr;
+    if (this.getPrivilegeMode()) {
+        this.savedUSP = this.r[6];
+        this.setRegister(6, this.savedSSP);
+    }
 
-    // Stash PSR
-    ssp--;
-    this.setMemory(ssp, this.psr);
+    this.setPrivilegeMode(0);
 
-    // Stash PC
-    ssp--;
-    this.setMemory(ssp, this.pc);
+    this.setMemory(--this.r[6], temp);
+    this.setMemory(--this.r[6], this.pc);
 
     // Clear privilege, priority, and condition codes
     // (clear bits 15, 10:8, and 2:0),
@@ -999,8 +1013,6 @@ LC3.prototype.interrupt = function(priorityLevel, newPC) {
     // Set new PC
     this.setRegister('pc', newPC);
 
-    // Set new supervisor stack pointer
-    this.setRegister(6, ssp);
 };
 
 export default LC3;
