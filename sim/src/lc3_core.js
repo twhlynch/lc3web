@@ -524,7 +524,7 @@ LC3.prototype.execute = function(op, address, operand) {
             if (this.ioLocations.indexOf(address) !== -1) {
                 op.isIO = true;
             }
-            if (this.inPrivilegedMemory(operand) && this.getPrivilegeMode()) {
+            if (this.inPrivilegedMemory(address) && this.getPrivilegeMode()) {
                 this.throwExceptionAndHalt('access');
             }
             return operand;
@@ -532,9 +532,7 @@ LC3.prototype.execute = function(op, address, operand) {
             if (this.ioLocations.indexOf(operand) !== -1) {
                 op.isIO = true;
             }
-            if ((this.inPrivilegedMemory(operand)
-                || this.inPrivilegedMemory(this.readMemory(operand)))
-                    && this.getPrivilegeMode()) {
+            if (this.getPrivilegeMode() && this.inPrivilegedMemory(operand)) {
                 this.throwExceptionAndHalt('access');
             }
             return this.readMemory(operand);
@@ -542,7 +540,7 @@ LC3.prototype.execute = function(op, address, operand) {
             if (this.ioLocations.indexOf(address) !== -1) {
                 op.isIO = true;
             }
-            if (this.inPrivilegedMemory(operand) && this.getPrivilegeMode()) {
+            if (this.inPrivilegedMemory(address) && this.getPrivilegeMode()) {
                 this.throwExceptionAndHalt('access');
             }
             return operand;
@@ -578,9 +576,7 @@ LC3.prototype.execute = function(op, address, operand) {
             if (this.ioLocations.indexOf(operand) !== -1) {
                 op.isIO = true;
             }
-            if ((this.inPrivilegedMemory(operand)
-                || this.inPrivilegedMemory(this.readMemory(operand)))
-                    && this.getPrivilegeMode()) {
+            if (this.inPrivilegedMemory(operand) && this.getPrivilegeMode()) {
                 this.throwExceptionAndHalt('access');
             }
             this.writeMemory(operand, this.getRegister(op.sr));
@@ -857,6 +853,7 @@ LC3.prototype.resetNumericRegisters = function() {
     for (var i = 0; i < this.r.length; i++) {
         this.r[i] = 0;
     }
+    this.r[6] = 0xFE00;
 }
 LC3.prototype.resetAllRegisters = function() {
     this.resetNumericRegisters();
