@@ -22,7 +22,7 @@ export const lc3os = (function() {
         0x0402: 0x07FE,
         0x0403: 0xA003,
         0x0404: 0x2E03,
-        0x0405: 0xC1C0,
+        0x0405: 0x8000, // changed out `ret` for `rti`
         0x0406: 0xFE00,
         0x0407: 0xFE02,
         // Implementation of OUT
@@ -33,7 +33,7 @@ export const lc3os = (function() {
         0x0434: 0xB004,
         0x0435: 0x2204,
         0x0436: 0x2E04,
-        0x0437: 0xC1C0,
+        0x0437: 0x8000, // changed out `ret` for `rti`
         0x0438: 0xFE04,
         0x0439: 0xFE06,
         // Implementation of PUTS
@@ -52,7 +52,7 @@ export const lc3os = (function() {
         0x045C: 0x2208,
         0x045D: 0x2408,
         0x045E: 0x2E08,
-        0x045F: 0xC1C0,
+        0x045F: 0x8000, // changed out `ret` for `rti`
         0x0460: 0xFE04,
         0x0461: 0xFE06,
         0x0462: 0xF3FD,
@@ -64,7 +64,7 @@ export const lc3os = (function() {
         0x04A3: 0xF020,     // GETC
         0x04A4: 0xF021,     // OUT
         0x04A5: 0x2E01,     // LD R7, SaveR7
-        0x04A6: 0xC1C0,     // RET
+        0x04A6: 0x8000,     // ~~RET~~ // changed out `ret` for `rti`
         0x04A7: 0x3001,     // SaveR7 (.BLKW #1)
         /* the "Input a character> " message goes here */
         // Implementation of PUTSP
@@ -89,7 +89,7 @@ export const lc3os = (function() {
         0x04F2: 0x2413,
         0x04F3: 0x2613,
         0x04F4: 0x2E13,
-        0x04F5: 0xC1C0,
+        0x04F5: 0x8000, // changed out `ret` for `rti`
         0x04F6: 0x3E06,
         0x04F7: 0xA607,
         0x04F8: 0x0801,
@@ -112,7 +112,7 @@ export const lc3os = (function() {
         0xFD06: 0xF025,
         0xFD07: 0x2036,
         0xFD08: 0x2E36,
-        0xFD09: 0xC1C0,
+        0xFD09: 0x8000, // changed out `ret` for `rti`
         0xFD70: 0x3E0E,
         0xFD71: 0x320C,
         0xFD72: 0x300A,
