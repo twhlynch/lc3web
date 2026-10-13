@@ -18,9 +18,9 @@ export function runLC3(code: string, input = ''): string {
 	}
 	const decoder = new TextDecoder();
 	let output = '';
-	let exception: 'opcode' | 'privilege' | null = null;
+	let exception: 'opcode' | 'privilege' | 'access' | null = null;
 
-	lc3.addListener((event: { type: string; value?: number | string; exception?: 'opcode' | 'privilege' }) => {
+	lc3.addListener((event: { type: string; value?: number | string; exception?: 'opcode' | 'privilege' | 'access' }) => {
 		if (event.type === 'exception') {
 			exception = event.exception ?? 'opcode';
 			return;
@@ -58,7 +58,12 @@ export function runLC3(code: string, input = ''): string {
 		output = (output + decoder.decode()).slice(0, max_output_length);
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		if (exception) {
-			output += exception === 'opcode' ? '\n[Illegal opcode exception]' : '\n[Privilege mode exception]';
+			output +=
+				exception === 'opcode'
+					? '\n[Illegal opcode exception]'
+					: exception === 'privilege'
+						? '\n[Privilege mode exception]'
+						: '\n[Access Control Violation]';
 		} else if (output.length >= max_output_length) {
 			output += '\n[Output limit reached]';
 		} else if (inputExhausted) {

@@ -101,6 +101,24 @@ LC3.prototype.formatAddress = function(address) {
     return (label !== undefined) ? label : LC3Util.toHexString(address);
 };
 
+LC3.prototype.getPrivilegeMode = function() {
+    // This bit being set to 1 means the program is running in user mode
+    return (this.psr & 0x8000) !== 0;
+}
+
+LC3.prototype.inPrivilegedMemory = function(address) {
+    // Checks if the address is in privileged memory
+    return (address < 0x3000) || (address >= 0xFE00);
+}
+
+LC3.prototype.throwExceptionAndHalt = function(exception) {
+    this.notifyListeners({
+        type: 'exception',
+        exception: exception
+    });
+    this.halt();
+}
+
 LC3.prototype.getConditionCode = function() {
     var n = (this.psr & 4) !== 0;
     var z = (this.psr & 2) !== 0;
@@ -126,11 +144,17 @@ LC3.prototype.nextInstruction = function() {
     // Store any keypresses since last time.
     this.updateIO();
 
+    // Make sure user programs aren't fetching from privileged memory
+    if (this.inPrivilegedMemory(this.pc) && this.getPrivilegeMode()) {
+        this.throwExceptionAndHalt('access');
+        return;
+    }
+
     // Perform the instruction cycle.
     this.fetch();
     var op = this.decode(this.ir);
     var address = this.evaluateAddress(this.pc, op);
-    var operand = this.fetchOperands(address);
+    var operand = this.fetchOperands(op, address);
     var result = this.execute(op, address, operand);
     this.storeResult(op, result);
 
@@ -295,9 +319,17 @@ LC3.prototype.evaluateAddress = function(pc, op) {
         return undefined;
     }
 };
-LC3.prototype.fetchOperands = function(address) {
+LC3.prototype.fetchOperands = function(op, address) {
     if (address === null || address === undefined) {
         return address;
+    }
+    var readsMemory = op.opcode === 2   // LD
+                   || op.opcode === 10  // LDI
+                   || op.opcode === 6   // LDR
+                   || op.opcode === 11; // STI
+    if (readsMemory && this.inPrivilegedMemory(address) && this.getPrivilegeMode()) {
+        this.throwExceptionAndHalt('access');
+        return 0;
     }
     return this.readMemory(address);
 };
@@ -423,7 +455,7 @@ LC3.prototype.executeTrap = function(op, operand) {
     else
     {
         // switch to the supervisor stack
-        if ((this.psr & 0x8000) !== 0) {
+        if (this.getPrivilegeMode()) {
             this.usp = this.r[6];
             this.setRegister(6, this.ssp);
         }
@@ -489,6 +521,10 @@ LC3.prototype.execute = function(op, address, operand) {
             if (this.ioLocations.indexOf(operand) !== -1) {
                 op.isIO = true;
             }
+            if (this.inPrivilegedMemory(operand) && this.getPrivilegeMode()) {
+                this.throwExceptionAndHalt('access');
+                return 0;
+            }
             return this.readMemory(operand);
         case 6: // LDR
             if (this.ioLocations.indexOf(address) !== -1) {
@@ -500,14 +536,8 @@ LC3.prototype.execute = function(op, address, operand) {
         case 9: // NOT
             return LC3Util.toUint16(~this.getRegister(op.sr));
         case 8: // RTI
-            if ((this.psr & 0x8000) !== 0) {
-                // Privilege mode exception
-                var ev = {
-                    type: 'exception',
-                    exception: 'privilege'
-                };
-                this.notifyListeners(ev);
-                this.halt();
+            if (this.getPrivilegeMode()) {
+                this.throwExceptionAndHalt('privilege');
             } else {
                 var r6 = this.r[6];
                 this.setRegister('pc', this.readMemory(r6));
@@ -515,7 +545,7 @@ LC3.prototype.execute = function(op, address, operand) {
                 this.setRegister(6, r6 + 2);
 
                 // switch back to the user stack
-                if ((this.psr & 0x8000) !== 0) {
+                if (this.getPrivilegeMode()) {
                     this.ssp = this.r[6];
                     this.setRegister(6, this.usp);
                 }
@@ -546,13 +576,7 @@ LC3.prototype.execute = function(op, address, operand) {
             this.executeTrap(op, operand);
             return null;
         case 13:
-            // Illegal opcode exception
-            var ev = {
-                type: 'exception',
-                exception: 'opcode'
-            };
-            this.notifyListeners(ev);
-            this.halt();
+            this.throwExceptionAndHalt('opcode');
             return null;
         default:
             return undefined;
@@ -762,6 +786,10 @@ LC3.prototype.readMemory = function(address) {
     return this.getMemory(address);
 }
 LC3.prototype.writeMemory = function(address, data) {
+    if (this.inPrivilegedMemory(address) && this.getPrivilegeMode()) {
+        this.throwExceptionAndHalt('access');
+        return;
+    }
     if (address === this.ddr) {
         // Writing DDR: must turn of DSR.
         this.setMemory(this.dsr, this.getMemory(this.dsr) & 0x7FFF);
@@ -900,6 +928,43 @@ LC3.prototype.unhalt = function() {
 }
 
 /*
+ * Load a block of words into memory starting at orig.
+ * Returns true on success. Notifies listeners on ACV,
+ * halts, and returns false.
+ */
+LC3.prototype.loadWords = function(orig, words) {
+    for (var i = 0; i < words.length; i++) {
+        if (this.inPrivilegedMemory(orig + i)) {
+            this.throwExceptionAndHalt('access');
+            return false;
+        }
+        this.setMemory(orig + i, words[i]);
+    }
+    return true;
+}
+
+/*
+ * Load an object files bytes into memory (little-endian)
+ * and set the PC to the origin.
+ * Returns true on success, false on ACV.
+ */
+LC3.prototype.loadObjectData = function(raw) {
+    var data = new Array(raw.length / 2);
+    for (var i = 0; i < data.length; i++) {
+        var lo = raw[2 * i + 1];
+        var hi = raw[2 * i] << 8;
+        data[i] = lo | hi;
+    }
+
+    var orig = data[0];
+    if (!this.loadWords(orig, data.slice(1))) {
+        return false;
+    }
+    this.setRegister('pc', orig);
+    return true;
+}
+
+/*
  * Load an assembly result into the LC-3.
  * Return true on success, false on failure.
  */
@@ -913,8 +978,8 @@ LC3.prototype.loadAssembled = function(assemblyResult) {
     var symbols = assemblyResult.symbolTable || {};
 
     // Add all the instructions.
-    for (var i = 0; i < mc.length; i++) {
-        this.setMemory(orig + i, mc[i]);
+    if (!this.loadWords(orig, mc)) {
+        return false;
     }
 
     // Add all the symbols.
@@ -947,7 +1012,7 @@ LC3.prototype.interrupt = function(priorityLevel, newPC) {
     }
 
     // Get supervisor stack pointer
-    if ((this.psr & 0x8000) !== 0) {
+    if (this.getPrivilegeMode()) {
         this.usp = this.getRegister(6);
         this.setRegister(6, this.ssp);
     }

@@ -1207,19 +1207,7 @@ $(document).ready(function() {
                 // Use a Uint16Array has platform-dependent endianness (!!!).
                 // Must manually use a Uint8Array to force little-endian.
                 var raw = new Uint8Array(e.target.result);
-                var data = new Array(raw.length / 2);
-                for (var i = 0; i < data.length; i ++) {
-                    var lo = raw[2 * i + 1];
-                    var hi = raw[2 * i] << 8;
-                    data[i] = lo | hi;
-                }
-                var orig = data[0];
-                for (var i = 1; i < data.length; i++) {
-                    var address = orig + i - 1;
-                    var value = data[i];
-                    lc3.setMemory(address, value);
-                }
-                lc3.setRegister('pc', orig);
+                lc3.loadObjectData(raw);
             };
             reader.readAsArrayBuffer(file);
         };
