@@ -848,8 +848,8 @@ LC3.prototype.resetAllRegisters = function() {
     this.x = 0;
     this.y = 0;
     this.z = 0;
-    this.ssp = 0xFDFF;
-    this.usp = 0;
+    this.ssp = 0x2FFF;
+    this.usp = 0xFDFF;
 }
 LC3.prototype.resetMemory = function() {
     for (var i = 0; i < this.memory.length; i++) {
