@@ -37,4 +37,4 @@ jobs:
                   emulate: '$GITHUB_WORKSPACE/cli/lc3 --simulate %o'
                   timeout: '30'
                   extensions: 'false'
-                  suppress: '14'
+                  suppress: '0'
