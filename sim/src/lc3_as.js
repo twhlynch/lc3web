@@ -568,6 +568,11 @@ var assemble = (function() {
             return false;
         }
 
+        if (label.match(/^[Rr][0-9]$/)) {
+            // Valid register; could be ambiguous.
+            return false;
+        }
+
         return true;
     }
 
